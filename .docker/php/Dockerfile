@@ -59,6 +59,10 @@ WORKDIR ${DOCKER_BASE_PATH}
 # Скопируем проект в рабочую директорию
 COPY . ${DOCKER_BASE_PATH}
 
+# Устанавливаем Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
 # Установка зависимостей проекта: Эта команда выполняет установку зависимостей, указанных в composer.json, используя Composer.
 # Параметры: --no-dev: Не устанавливать зависимости, указанные в разделе require-dev вашего composer.json. --optimize-autoloader: Оптимизировать автозагрузчик для более быстрого выполнения.
 RUN composer install --no-dev --optimize-autoloader

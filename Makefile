@@ -92,7 +92,6 @@ cache-clear:		## Clear all cache of Laravel Project
 	docker compose exec -it app bash -c "php artisan config:cache"
 
 config-clear:		## Clear config of Laravel Project
-	docker compose exec -it app bash -c "php artisan cache:clear"
 	docker compose exec -it app bash -c "php artisan config:clear"
 	docker compose exec -it app bash -c "php artisan config:cache"
 

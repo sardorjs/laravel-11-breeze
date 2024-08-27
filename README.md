@@ -14,19 +14,11 @@ Ensure you have the following installed on your system:
 Start by cloning the repository to your local machine:
 
 ```bash
-git clone https://github.com/sardorjs/laravel-11-docker.git
-cd laravel-11-docker
+git clone https://github.com/sardorjs/laravel-11-breeze.git
+cd laravel-11-breeze
 ```
 
-## 2. Start the Containers
-
-Bring up the containers to initialize the environment:
-
-```bash
-make up
-```
-
-## 3. Copy the `.env` File
+## 2. Copy the `.env` File
 
 Create the environment configuration by copying the example `.env` file:
 
@@ -45,6 +37,16 @@ DB_PASSWORD=14ufFIjgfoB32fkS3
 DB_ROOT_PASSWORD=549JryqIfS483FG
 ```
 
+## 3. Start the Containers
+
+Bring up the containers to initialize the environment:
+
+```bash
+make up
+```
+
+
+
 ## 4. Install Dependencies
 
 Once the containers are running, enter the container and install the PHP dependencies:
@@ -60,8 +62,8 @@ Ensure the `storage` and `bootstrap/cache` directories are writable by running:
 
 ```bash
 make cli
-sudo chown -R www-data:www-data storage bootstrap/cache
-sudo chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
 ```
 
 ## 6. Generate Application Key
