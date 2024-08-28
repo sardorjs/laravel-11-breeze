@@ -23,6 +23,9 @@ LAST_SQL_BACKUP_FILE = $(shell ls -t backups | head -n 1)		## Find latest SQL fi
 #####################################################
 
 up:					## Start all containers
+	docker compose up -d
+
+up-build:			## Start all containers with build
 	docker compose up -d --build
 
 up-force:			## Start the containers with force rebuild
