@@ -2,12 +2,13 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
@@ -30,16 +31,50 @@ Route::get('/flights', function () {
 
 Route::get('/direct-login', function(){
     // Auth::login(User::first());
-    Auth::loginUsingId(2);
+    $auth = Auth::loginUsingId(1);
+
     return response()->json([
         'success' => true
     ]);
 });
 
 
+Route::post('login', function (Request $request) {
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
+
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+
+        return redirect()->intended('welcome');
+    }
+
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ])->onlyInput('email');
+});
+
+
+Route::post('/confirm-password', function (Request  $request){
+    if(! \Illuminate\Support\Facades\Hash::check($request->password, $request->user()->password)){
+        return back()->withErrors([
+            'password' => 'Your current password is incorrect.',
+        ]);
+    }
+
+    $request->session()->passwordConfirmed();
+
+    return redirect()->intended();
+})->middleware(['auth', 'throttle:6,1']);
+
+
+
+
 Route::get('/basic-auth', function () {
     return response() ->json(
-        ['basic' =>  true] 
+        ['basic' =>  true]
     );
 })->middleware('auth.basic');
 
