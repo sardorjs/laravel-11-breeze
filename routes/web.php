@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -38,8 +39,11 @@ Route::get('/direct-login', function(){
     ]);
 });
 
+Route::get('my-login', function () {
+    return view('tests.login');
+});
 
-Route::post('login', function (Request $request) {
+Route::post('my-login', function (Request $request) {
     $credentials = $request->validate([
         'email' => ['required', 'email'],
         'password' => ['required'],
@@ -48,16 +52,20 @@ Route::post('login', function (Request $request) {
     if (Auth::attempt($credentials)) {
         $request->session()->regenerate();
 
-        return redirect()->intended('welcome');
+        return redirect()->intended(route('welcome'));
     }
 
     return back()->withErrors([
         'email' => 'The provided credentials do not match our records.',
     ])->onlyInput('email');
-});
+})->name('my-login');
 
 
-Route::post('/confirm-password', function (Request  $request){
+Route::get('confirm', function () {
+    return view('tests.confirm');
+})->middleware(['auth']);
+
+Route::post('/confirm', function (Request  $request){
     if(! \Illuminate\Support\Facades\Hash::check($request->password, $request->user()->password)){
         return back()->withErrors([
             'password' => 'Your current password is incorrect.',
@@ -67,9 +75,37 @@ Route::post('/confirm-password', function (Request  $request){
     $request->session()->passwordConfirmed();
 
     return redirect()->intended();
-})->middleware(['auth', 'throttle:6,1']);
+})->middleware(['auth', 'throttle:6,1'])->name('confirm');
 
 
+
+Route::get('view_user', function(){
+    // if(! Gate::allows('view_user')){
+    //     abort(403);
+    // }
+
+    Gate::authorize('view_user');
+
+    // Gate::authorize('look_as_user');
+
+    $response = Gate::inspect('look_as_user');
+
+    if($response->allowed()){
+        echo "cool";
+    }else{
+        echo $response->message();
+    }
+
+    Gate::authorize('deny_with_404');
+
+    return response()->json('yes');
+})->name('view_user_1');
+
+Route::get('policy_user', function(){
+    Gate::authorize('update', Auth::user());
+
+    return response()->json('done job!');
+});
 
 
 Route::get('/basic-auth', function () {
